@@ -18,6 +18,8 @@ spec:
     metadata:
       labels:
         app: kube-weight-demo
+        # 主要稳定的发行版将有一个 track 标签，其值为 stable, 新版本为canary
+        track: canary
         dce.daocloud.io/app: kube-weight-demo
         dce.daocloud.io/component: kube-weight-demo
       annotations:

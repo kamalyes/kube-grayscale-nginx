@@ -18,6 +18,8 @@ spec:
     metadata:
       labels:
         app: kube-flow-demo
+        # 主要稳定的发行版将有一个 track 标签，其值为 stable, 新版本为canary
+        track: canary
         dce.daocloud.io/app: kube-flow-demo
         dce.daocloud.io/component: kube-flow-demo
       annotations:

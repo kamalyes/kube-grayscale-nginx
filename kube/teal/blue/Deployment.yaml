@@ -18,7 +18,9 @@ spec:
     metadata:
       labels:
         app: kube-blue-demo
-        dce.daocloud.io/app: kube-blue-demo
+        # 主要稳定的发行版将有一个 track 标签，其值为 stable, 新版本为canary
+        track: stable
+	dce.daocloud.io/app: kube-blue-demo
         dce.daocloud.io/component: kube-blue-demo
       annotations:
         dce.daocloud.io/parcel.egress.burst: '0'
