@@ -13,19 +13,19 @@
 ### 示例应用部署
 
 ```bash
-[root@k8s-master kube-nginx]# kubectl apply -f kube/teal/blue
+[root@k8s-master kube-grayscale-nginx]# kubectl apply -f teal/blue
 deployment.apps/kube-blue-demo created
 service/kube-blue-demo-svc created
 ingress.networking.k8s.io/kube-blue-canary created
 ```
 
 ```bash
-[root@k8s-master kube-nginx]# kubectl get svc,deploy,pods -n kube-grayscale
+[root@k8s-master kube-grayscale-nginx]# kubectl get svc,deploy,pods -n kube-grayscale
 # ${k8s-node-ip} 请替换为你自己的
-[root@k8s-master kube-nginx]#  echo "${k8s-node-ip} kube.teal.com" >> /etc/hosts
-[root@k8s-master kube-nginx]# service network restart
+[root@k8s-master kube-grayscale-nginx]#  echo "${k8s-node-ip} kube.teal.com" >> /etc/hosts
+[root@k8s-master kube-grayscale-nginx]# service network restart
 #  访问如下内容说明部署成功！
-[root@k8s-master kube-nginx]# curl -i  http://kube.teal.com
+[root@k8s-master kube-grayscale-nginx]# curl -i  http://kube.teal.com
 {"message":"This is version:blue running in pod kube-blue-demo-66b788d9-22xzs"}
 ```
 
@@ -36,7 +36,7 @@ ingress.networking.k8s.io/kube-blue-canary created
 假设线上已运行了一套对外提供的七层demo应用，此时开发了一些新的功能，需要上线新版本demo应用，但是又不想直接替换成新版本demo应用，而是希望将请求头包含`env=green`的客户端请求转发到新版本demo应用中，进行验证测试新版本demo应用，等测试验证通过并稳定后，可将所有流量从老版本demo应用切换到新版本demo应用中，再平滑地将老版本demo应用下线。创建新版本Ingress：
 
 ```bash
-[root@k8s-master kube-nginx]# kubectl apply -f kube/teal/green
+[root@k8s-master kube-grayscale-nginx]# kubectl apply -f teal/green
 deployment.apps/kube-green-demo created
 service/kube-green-demo-svc created
 ingress.networking.k8s.io/kube-green-canary created
@@ -65,7 +65,7 @@ nginx.ingress.kubernetes.io/canary-by-header-pattern: "user_2|user-3|user4"
 
 ```bash
 # 请求头为env: green访问到新的版本
-[root@k8s-master kube-nginx]# curl -X GET "http://kube.teal.com" -H "env: green"
+[root@k8s-master kube-grayscale-nginx]# curl -X GET "http://kube.teal.com" -H "env: green"
 {"message":"This is version:green running in pod kube-blue-demo-5b66668d9-rbhlb"}
 
 # 其他则访问到老的版本
@@ -78,7 +78,7 @@ $ curl http://kube.teal.com
 假设线上已运行了一套对外提供的七层demo应用，此时开发了一些新的功能，需要上线新版本demo应用，又不想直接替换成新版本demo应用，而是只希望公司内部人员能访问到新版本demo应用中，进行测试验证新版本demo应用，非公司内部人员访问还是访问到老版本应用中。等公司内部人员测试验证通过并稳定后，可将所有流量从老版本demo应用切换到新版本demo应用中，再平滑地将老版本demo应用下线。创建新版本Ingress：
 
 ```bash
-[root@k8s-master kube-nginx]# kubectl apply -f kube/flow/green
+[root@k8s-master kube-grayscale-nginx]# kubectl apply -f flow/green
 deployment.apps/kube-flow-demo created
 service/kube-flow-demo-svc created
 ingress.networking.k8s.io/kube-flow-canary created
@@ -88,7 +88,7 @@ ingress.networking.k8s.io/kube-flow-canary created
 
 ```bash
 # 请求头为X-Forwarded-For:123.156.789.123访问到新的版本
-[root@k8s-master kube-nginx]# curl  -X GET "http://kube.teal.com" -H "X-Forwarded-For: 123.156.789.123"
+[root@k8s-master kube-grayscale-nginx]# curl  -X GET "http://kube.teal.com" -H "X-Forwarded-For: 123.156.789.123"
 {"message":"This is version:flow running in pod kube-flow-demo-68d9786b-1z58s"}
 
 # 其他则访问到老的版本
@@ -101,7 +101,7 @@ $ curl http://kube.teal.com
 假设线上已运行了一套对外提供的七层demo应用，此时修复了一些问题，需要上线新版本demo应用，又不想直接替换成新版本demo应用，而是希望将20%的流量切换新版本。待运行一段时间稳定后，可将所有流量从老版本demo应用切换到新版本demo应用中，再平滑地将老版本demo应用下线。创建新版本Ingress：
 
 ```bash
-[root@k8s-master kube-nginx]# kubectl apply -f kube/weight/green
+[root@k8s-master kube-grayscale-nginx]# kubectl apply -f weight/green
 deployment.apps/kube-weight-demo created
 service/kube-weight-demo-svc created
 ingress.networking.k8s.io/kube-weight-canary created
@@ -111,7 +111,7 @@ ingress.networking.k8s.io/kube-weight-canary created
 
 ```bash
 # 可以看出，有4/20的几率由新版本服务响应，符合20%服务权重的设置。
-[root@k8s-master kube-nginx]# for i in `seq 20`;do curl -X GET "http://kube.teal.com" ; echo -e "$fruit";done
+[root@k8s-master kube-grayscale-nginx]# for i in `seq 20`;do curl -X GET "http://kube.teal.com" ; echo -e "$fruit";done
 {"message":"This is version:blue running in pod kube-blue-demo-66b788d9-22xzs"}
 {"message":"This is version:blue running in pod kube-blue-demo-66b788d9-22xzs"}
 {"message":"This is version:blue running in pod kube-blue-demo-66b788d9-22xzs"}
@@ -138,10 +138,10 @@ ingress.networking.k8s.io/kube-weight-canary created
 
 ```bash
 kubectl create ns kube-grayscale
-kubectl apply -f kube/flow/
-kubectl apply -f kube/weight/
-kubectl apply -f kube/teal/blue
-kubectl apply -f kube/teal/green
+kubectl apply -f flow/
+kubectl apply -f weight/
+kubectl apply -f teal/blue
+kubectl apply -f teal/green
 ```
 
 ### 注解说明
@@ -163,4 +163,3 @@ Nginx Ingress支持通过配置注解（Annotations）来实现不同场景下�
 ### 总结
 
 本文介绍了金丝雀发布与蓝绿发布，并以企业案例的方式讲解了不同的场景使用什么样的发布方式
-
